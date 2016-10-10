@@ -23,8 +23,18 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="backtest.py" />
     <Compile Include="classifier.py" />
+    <Compile Include="featureGenerator.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="predictor.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="trainingData.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="yahoo.py">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
