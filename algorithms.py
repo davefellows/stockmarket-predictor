@@ -3,7 +3,6 @@ import _pickle as cPickle
 import numpy as np
 import pandas as pd
 import datetime
-from sklearn import preprocessing
 from datetime import datetime
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import neighbors

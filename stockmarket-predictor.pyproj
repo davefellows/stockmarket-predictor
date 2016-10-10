@@ -28,6 +28,9 @@
     <Compile Include="featureGenerator.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="algorithms.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="predictor.py">
       <SubType>Code</SubType>
     </Compile>
