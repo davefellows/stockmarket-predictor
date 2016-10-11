@@ -24,7 +24,7 @@ class trainingData(object):
         Computes daily Returns based on Adj Close.
         Returns pandas dataframe.
         """
-        df =  pd.io.data.get_data_yahoo(symbol, start, end)
+        df =  data.get_data_yahoo(symbol, start, end)
 
         df.columns.values[-1] = 'AdjClose'
         df.columns = df.columns + '_' + symbol
@@ -33,55 +33,55 @@ class trainingData(object):
         return df
 
 
-    #def getStockFromQuandl(self, symbol, name, start, end):
-    #    """
-    #    Downloads Stock from Quandl.
-    #    Computes daily Returns based on Adj Close.
-    #    Returns pandas dataframe.
-    #    """
-    #    import Quandl
-    #    df =  Quandl.get(symbol, trim_start = start, trim_end = end, authtoken="your token")
+    def getStockFromQuandl(self, symbol, name, start, end):
+        """
+        Downloads Stock from Quandl.
+        Computes daily Returns based on Adj Close.
+        Returns pandas dataframe.
+        """
+        import Quandl
+        df =  Quandl.get(symbol, trim_start = start, trim_end = end, authtoken="your token")
 
-    #    df.columns.values[-1] = 'AdjClose'
-    #    df.columns = df.columns + '_' + name
-    #    df['Return_%s' %name] = df['AdjClose_%s' %name].pct_change()
+        df.columns.values[-1] = 'AdjClose'
+        df.columns = df.columns + '_' + name
+        df['Return_%s' %name] = df['AdjClose_%s' %name].pct_change()
     
-    #    return df
+        return df
 
 
-    #def loadFromWeb(self, fout, start_string, end_string):
-    #    """
-    #    Collects predictors data from Yahoo Finance and Quandl.
-    #    Returns a list of dataframes.
-    #    """
-    #    start = parser.parse(start_string)
-    #    end = parser.parse(end_string)
+    def loadAllFromWeb(self, fout, start, end):
+        """
+        Collects predictors data from Yahoo Finance and Quandl.
+        Returns a list of dataframes.
+        """
+        #start = parser.parse(start_string)
+        #end = parser.parse(end_string)
     
-    #    nasdaq = getStockFromYahoo('^IXIC', start, end)
-    #    frankfurt = getStockFromYahoo('^GDAXI', start, end)
-    #    london = getStockFromYahoo('^FTSE', start, end)
-    #    paris = getStockFromYahoo('^FCHI', start, end)
-    #    hkong = getStockFromYahoo('^HSI', start, end)
-    #    nikkei = getStockFromYahoo('^N225', start, end)
-    #    australia = getStockFromYahoo('^AXJO', start, end)
+        nasdaq = self.getStockFromYahoo('^IXIC', start, end)
+        frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
+        london = self.getStockFromYahoo('^FTSE', start, end)
+        paris = self.getStockFromYahoo('^FCHI', start, end)
+        hkong = self.getStockFromYahoo('^HSI', start, end)
+        nikkei = self.getStockFromYahoo('^N225', start, end)
+        australia = self.getStockFromYahoo('^AXJO', start, end)
     
-    #    djia = getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start_string, end_string) 
+        djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
     
-    #    out =  pd.io.data.get_data_yahoo(fout, start, end)
-    #    out.columns.values[-1] = 'AdjClose'
-    #    out.columns = out.columns + '_Out'
-    #    out['Return_Out'] = out['AdjClose_Out'].pct_change()
+        out =  data.get_data_yahoo(fout, start, end)
+        out.columns.values[-1] = 'AdjClose'
+        out.columns = out.columns + '_Out'
+        out['Return_Out'] = out['AdjClose_Out'].pct_change()
     
-    #    trainData['output'] = out
-    #    trainData['nasdaq'] = nasdaq
-    #    trainData['djia'] = djia
-    #    trainData['frankfurt'] = frankfurt
-    #    trainData['paris'] = paris
-    #    trainData['hkong'] = hkong
-    #    trainData['nikkei'] = nikkei
-    #    trainData['australia'] = australia
+        trainData['output'] = out
+        trainData['nasdaq'] = nasdaq
+        trainData['djia'] = djia
+        trainData['frankfurt'] = frankfurt
+        trainData['paris'] = paris
+        trainData['hkong'] = hkong
+        trainData['nikkei'] = nikkei
+        trainData['australia'] = australia
 
-    #    return trainData #out #, nasdaq, djia, frankfurt, london, paris, hkong, nikkei, australia]
+        return trainData #out #, nasdaq, djia, frankfurt, london, paris, hkong, nikkei, australia]
 
 
     #def returnDataForClassification(self, start_test):

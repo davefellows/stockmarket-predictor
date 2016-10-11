@@ -1,29 +1,28 @@
 import os.path, sys
 sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir))
 
+from datetime import datetime
 import pytest
 import pandas as pd
 from trainingData import trainingData
 
-def test_one():
-    x = 'this'
-    assert 'h' in x
+predictionSymbol = '^GSPC' #symbol for S&P500
+startdate = datetime(2016,1,1)
+enddate = datetime(2016,1,31)
 
 def test_getStockFromYahoo():
     td = trainingData()
-    dataframe = td.getStockFromYahoo('MSFT', '2016-01-01', '2016-01-02')
-    print (dataframe)
+    dataframe = td.getStockFromYahoo('MSFT', startdate, enddate)
+    assert dataframe.index.size == 19
 
+def test_getStockFromQuandl():
+    td = trainingData()
+    dataframe = td.getStockFromYahoo('MSFT', startdate, enddate)
+    assert dataframe.index.size == 19
 
+def test_loadAllFromWeb():
+    td = trainingData()
+    trainData = td.loadAllFromWeb(predictionSymbol, startdate, enddate)
+    
+    print(trainData[0].index.values)
 
-class test_trainingData:
-    """Tests for the trainingData class"""
-
-    def test_one(self):
-        x = 'this'
-        assert 'h' in x
-
-    def test_getStockFromYahoo(self):
-        dataframe = trainingData.getStockFromYahoo('MSFT', '2016-01-01', '2016-01-02')
-        print (dataframe)
-        
