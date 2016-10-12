@@ -1,3 +1,4 @@
+import pandas as pd
 
 def addFeatures(dataframe, adjclose, returns, n):
     """

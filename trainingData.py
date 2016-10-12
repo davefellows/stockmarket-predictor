@@ -6,16 +6,18 @@ from sklearn import preprocessing
 
 class trainingData(object):
 
-    index = 6 # number of datasets?
+    index = 4 # number of datasets?
+    lags = range(2, 3)
 
-    def load(self, fout, start_string, end_string, delta):
+    def load(self, fout, startdate, enddate, delta):
         """
         Loads all data from web into dataFrames, 
         adds various features, merges datasets.
         """
-        trainData = loadFromWeb(fout, start_string, end_string)
+        trainData = self.loadAllFromWeb(fout, startdate, enddate)
         trainDataWithFeatures = fg.applyRollMeanDelayedReturns(trainData, delta)
-        self.mergedTrainingData = fg.mergeDataframes(trainDataWithFeatures, self.index)
+        mergedData = fg.mergeDataframes(trainDataWithFeatures, self.index, enddate)
+        self.mergedTrainingData = fg.applyTimeLag(mergedData, self.lags, delta)
 
 
     def getStockFromYahoo(self, symbol, start, end):
@@ -39,8 +41,8 @@ class trainingData(object):
         Computes daily Returns based on Adj Close.
         Returns pandas dataframe.
         """
-        import Quandl
-        df =  Quandl.get(symbol, trim_start = start, trim_end = end, authtoken="your token")
+        import quandl
+        df =  quandl.get(symbol, trim_start = start, trim_end = end, authtoken="your token")
 
         df.columns.values[-1] = 'AdjClose'
         df.columns = df.columns + '_' + name
@@ -58,56 +60,64 @@ class trainingData(object):
         #end = parser.parse(end_string)
     
         nasdaq = self.getStockFromYahoo('^IXIC', start, end)
+        print('got nasdaq')
         frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
-        london = self.getStockFromYahoo('^FTSE', start, end)
+        print('got frankfurt')
+        #london = self.getStockFromYahoo('^FTSE', start, end)
+        #print('got london')
         paris = self.getStockFromYahoo('^FCHI', start, end)
+        print('got paris')
         hkong = self.getStockFromYahoo('^HSI', start, end)
+        print('got hkong')
         nikkei = self.getStockFromYahoo('^N225', start, end)
+        print('got nikkei')
         australia = self.getStockFromYahoo('^AXJO', start, end)
+        print('got australia')
     
-        djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
+        #djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
+        #print('got djia')
     
         out =  data.get_data_yahoo(fout, start, end)
         out.columns.values[-1] = 'AdjClose'
         out.columns = out.columns + '_Out'
         out['Return_Out'] = out['AdjClose_Out'].pct_change()
     
-        trainData['output'] = out
-        trainData['nasdaq'] = nasdaq
-        trainData['djia'] = djia
-        trainData['frankfurt'] = frankfurt
-        trainData['paris'] = paris
-        trainData['hkong'] = hkong
-        trainData['nikkei'] = nikkei
-        trainData['australia'] = australia
+        #trainData['output'] = out
+        #trainData['nasdaq'] = nasdaq
+        #trainData['djia'] = djia
+        #trainData['frankfurt'] = frankfurt
+        #trainData['paris'] = paris
+        #trainData['hkong'] = hkong
+        #trainData['nikkei'] = nikkei
+        #trainData['australia'] = australia
 
-        return trainData #out #, nasdaq, djia, frankfurt, london, paris, hkong, nikkei, australia]
+        return out, nasdaq, frankfurt, paris, hkong, nikkei, australia
 
 
-    #def returnDataForClassification(self, start_test):
-    #    """
-    #    generates categorical output column, attach to dataframe 
-    #    label the categories and split into train and test
-    #    """
+    def returnDataForClassification(self, start_test):
+        """
+        generates categorical output column, attach to dataframe 
+        label the categories and split into train and test
+        """
 
-    #    dataset = mergedTrainingData
+        dataset = self.mergedTrainingData
 
-    #    le = preprocessing.LabelEncoder()
+        le = preprocessing.LabelEncoder()
     
-    #    dataset['UpDown'] = dataset['Return_Out']
-    #    dataset.UpDown[dataset.UpDown >= 0] = 'Up'
-    #    dataset.UpDown[dataset.UpDown < 0] = 'Down'
-    #    dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
+        #dataset['UpDown'] = dataset['Return_Out']
+        dataset.UpDown[dataset.Return_Out >= 0] = 'Up'
+        dataset.UpDown[dataset.Return_Out < 0] = 'Down'
+        dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
     
-    #    features = dataset.columns[1:-1]
-    #    X = dataset[features]    
-    #    y = dataset.UpDown    
+        features = dataset.columns[1:-1]
+        X = dataset[features]    
+        y = dataset.UpDown    
     
-    #    X_train = X[X.index < start_test]
-    #    y_train = y[y.index < start_test]              
+        X_train = X[X.index < start_test]
+        y_train = y[y.index < start_test]              
     
-    #    X_test = X[X.index >= start_test]    
-    #    y_test = y[y.index >= start_test]
+        X_test = X[X.index >= start_test]    
+        y_test = y[y.index >= start_test]
     
-    #    return X_train, y_train, X_test, y_test   
+        return X_train, y_train, X_test, y_test   
 

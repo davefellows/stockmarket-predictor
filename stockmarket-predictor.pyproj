@@ -25,6 +25,9 @@
   <ItemGroup>
     <Compile Include="backtest.py" />
     <Compile Include="classifier.py" />
+    <Compile Include="constants.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="featureGenerator.py">
       <SubType>Code</SubType>
     </Compile>
