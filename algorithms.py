@@ -14,16 +14,16 @@ import pandas.io.data
 from sklearn.qda import QDA
 import re
 from dateutil import parser
-from backtest import Strategy, Portfolio
+#from backtest import Strategy, Portfolio
 
 
-def performRFClass(X_train, y_train, X_test, y_test, parameters, fout, savemodel):
+def performRFClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
     """
     Random Forest Binary Classification
     """
-    clf = RandomForestClassifier(n_estimators=1000, n_jobs=-1)
+    clf = RandomForestClassifier(n_estimators=100, n_jobs=-1)
     clf.fit(X_train, y_train)
-    
+        
     if savemodel == True:
         fname_out = '{}-{}.pickle'.format(fout, datetime.now())
         with open(fname_out, 'wb') as f:
@@ -35,7 +35,7 @@ def performRFClass(X_train, y_train, X_test, y_test, parameters, fout, savemodel
 
 
 
-def performKNNClass(X_train, y_train, X_test, y_test, parameters, fout, savemodel):
+def performKNNClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
     """
     KNN binary Classification
     """
@@ -52,12 +52,12 @@ def performKNNClass(X_train, y_train, X_test, y_test, parameters, fout, savemode
     return accuracy
 
 
-def performSVMClass(X_train, y_train, X_test, y_test, parameters, fout, savemodel):
+def performSVMClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
     """
     SVM binary Classification
     """
-    c = parameters[0]
-    g =  parameters[1]
+    #c = parameters[0]
+    #g =  parameters[1]
     clf = SVC()
     clf.fit(X_train, y_train)
 

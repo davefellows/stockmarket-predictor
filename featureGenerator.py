@@ -52,6 +52,8 @@ def applyTimeLag(dataset, lags, delta):
     at head and tail
     """
     
+    # need to shift the y value back a day so we're predicting
+    # next day price, rather than today!
     dataset.Return_Out = dataset.Return_Out.shift(-1)
     maxLag = max(lags)
 
@@ -61,4 +63,4 @@ def applyTimeLag(dataset, lags, delta):
             newcolumn = column + str(lag)
             dataset[newcolumn] = dataset[column].shift(lag)
 
-    return dataset.iloc[maxLag:-1,:]
+    return dataset.iloc[maxLag:-1,:].dropna()

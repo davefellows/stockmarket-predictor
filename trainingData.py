@@ -1,23 +1,25 @@
 import featureGenerator as fg
 import pandas as pd
-#import pandas.io.data
 from pandas_datareader import data
 from sklearn import preprocessing
+from sklearn.cross_validation import train_test_split
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 class trainingData(object):
 
-    index = 4 # number of datasets?
-    lags = range(2, 3)
+    index = 2 # number of datasets?
+    #lags = range(2, 3)
 
-    def load(self, fout, startdate, enddate, delta):
+    def load(self, fout, startdate, enddate, delta, lags):
         """
         Loads all data from web into dataFrames, 
         adds various features, merges datasets.
         """
-        trainData = self.loadAllFromWeb(fout, startdate, enddate)
-        trainDataWithFeatures = fg.applyRollMeanDelayedReturns(trainData, delta)
-        mergedData = fg.mergeDataframes(trainDataWithFeatures, self.index, enddate)
-        self.mergedTrainingData = fg.applyTimeLag(mergedData, self.lags, delta)
+        self.trainData = self.loadAllFromWeb(fout, startdate, enddate)
+        self.trainDataWithFeatures = fg.applyRollMeanDelayedReturns(self.trainData, delta)
+        self.mergedData = fg.mergeDataframes(self.trainDataWithFeatures, self.index, enddate)
+        self.finalTrainingData = fg.applyTimeLag(self.mergedData, lags, delta)
 
 
     def getStockFromYahoo(self, symbol, start, end):
@@ -59,19 +61,23 @@ class trainingData(object):
         #start = parser.parse(start_string)
         #end = parser.parse(end_string)
     
-        nasdaq = self.getStockFromYahoo('^IXIC', start, end)
-        print('got nasdaq')
-        frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
-        print('got frankfurt')
+        #nasdaq = self.getStockFromYahoo('^IXIC', start, end)
+        #print('got nasdaq')
+        #frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
+        #print('got frankfurt')
         #london = self.getStockFromYahoo('^FTSE', start, end)
         #print('got london')
-        paris = self.getStockFromYahoo('^FCHI', start, end)
-        print('got paris')
-        hkong = self.getStockFromYahoo('^HSI', start, end)
-        print('got hkong')
-        nikkei = self.getStockFromYahoo('^N225', start, end)
-        print('got nikkei')
+        #paris = self.getStockFromYahoo('^FCHI', start, end)
+        #print('got paris')
+        #hkong = self.getStockFromYahoo('^HSI', start, end)
+        #print('got hkong')
+        #nikkei = self.getStockFromYahoo('^N225', start, end)
+        #print('got nikkei')
         australia = self.getStockFromYahoo('^AXJO', start, end)
+        # need to shift australian values back a date due to time zone dif with US
+        for column in australia.columns:
+            australia[column] = australia[column].shift(-1)
+
         print('got australia')
     
         #djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
@@ -91,7 +97,7 @@ class trainingData(object):
         #trainData['nikkei'] = nikkei
         #trainData['australia'] = australia
 
-        return out, nasdaq, frankfurt, paris, hkong, nikkei, australia
+        return out, australia
 
 
     def returnDataForClassification(self, start_test):
@@ -100,24 +106,26 @@ class trainingData(object):
         label the categories and split into train and test
         """
 
-        dataset = self.mergedTrainingData
+        dataset = self.finalTrainingData
 
         le = preprocessing.LabelEncoder()
     
-        #dataset['UpDown'] = dataset['Return_Out']
+        dataset['UpDown'] = dataset['Return_Out']
         dataset.UpDown[dataset.Return_Out >= 0] = 'Up'
         dataset.UpDown[dataset.Return_Out < 0] = 'Down'
         dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
     
         features = dataset.columns[1:-1]
         X = dataset[features]    
-        y = dataset.UpDown    
+        y = dataset.UpDown
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)    
     
-        X_train = X[X.index < start_test]
-        y_train = y[y.index < start_test]              
+        #X_train = X[X.index < start_test]
+        #y_train = y[y.index < start_test]              
     
-        X_test = X[X.index >= start_test]    
-        y_test = y[y.index >= start_test]
+        #X_test = X[X.index >= start_test]    
+        #y_test = y[y.index >= start_test]
     
         return X_train, y_train, X_test, y_test   
 
