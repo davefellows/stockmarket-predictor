@@ -1,5 +1,7 @@
 import pandas as pd
 
+index = 6 # columns to remove from each dataset
+
 def addFeatures(dataframe, adjclose, returns, n):
     """
     operates on two columns of dataframe:
@@ -13,7 +15,7 @@ def addFeatures(dataframe, adjclose, returns, n):
     dataframe[return_n] = dataframe[adjclose].pct_change(n)
     
     roll_n = returns[7:] + "RolMean" + str(n)
-    dataframe[roll_n] = pd.rolling_mean(dataframe[returns], n)
+    dataframe[roll_n] = pd.Series(dataframe[returns]).rolling(window=n).mean()
 
 
 def applyRollMeanDelayedReturns(datasets, delta):
@@ -30,7 +32,7 @@ def applyRollMeanDelayedReturns(datasets, delta):
     return datasets    
 
 
-def mergeDataframes(datasets, index, cut):
+def mergeDataframes(datasets, cut):
     """
     merges datasets in the list 
     """
