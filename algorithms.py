@@ -30,7 +30,7 @@ def performRFClass(X_train, y_train, X_test, y_test, parameters=None, fout=None,
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 
 
@@ -48,7 +48,7 @@ def performKNNClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 
 def performSVMClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
@@ -67,7 +67,7 @@ def performSVMClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 
 def performAdaBoostClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
@@ -86,7 +86,7 @@ def performAdaBoostClass(X_train, y_train, X_test, y_test, parameters=None, fout
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 
 def performGTBClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
@@ -103,7 +103,7 @@ def performGTBClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 def performQDAClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
     """
@@ -126,7 +126,7 @@ def performQDAClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     
     accuracy = clf.score(X_test, y_test)
     
-    return accuracy
+    return accuracy, clf
 
 
 def performMLPClass(X_train, y_train, X_test, y_test, parameters=None, fout=None, savemodel=False):
@@ -137,8 +137,8 @@ def performMLPClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     if parameters is not None:
         layers = parameters
 
-    mlp = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=layers, random_state=1)
-    mlp.fit(X_train, y_train) 
-    accuracy = mlp.score(X_test, y_test)
-    return accuracy, mlp
+    clf = MLPClassifier(solver='lbgfs', alpha=1e-5, hidden_layer_sizes=layers, random_state=1)
+    clf.fit(X_train, y_train) 
+    accuracy = clf.score(X_test, y_test)
+    return accuracy, clf
 

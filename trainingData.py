@@ -145,11 +145,12 @@ class trainingData(object):
 
         le = preprocessing.LabelEncoder()
     
+        dataset['UpDown'] = dataset['Return_Out']
+        dataset.UpDown[dataset.Return_Out >= 0] = 'Up'
+        dataset.UpDown[dataset.Return_Out < 0] = 'Down'
+        dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
     
-        #X_train = X[X.index < start_test]
-        #y_train = y[y.index < start_test]              
-    
-        #X_test = X[X.index >= start_test]    
-        #y_test = y[y.index >= start_test]
-    
-        return X_train, y_train, X_test, y_test   
+        features = dataset.columns[1:-1]
+        X = dataset[features]    
+        
+        return X  

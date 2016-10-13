@@ -1,4 +1,7 @@
 
+import abc
+from abc import ABCMeta
+from abc import abstractmethod
 
 class Strategy(object):
     """Strategy is an abstract base class providing an interface for
