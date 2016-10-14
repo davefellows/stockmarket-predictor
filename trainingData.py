@@ -66,7 +66,7 @@ class trainingData(object):
         print('got volatility')
         australia = self.getStockFromYahoo('^AXJO', start, end)
         print('got australia')
-        
+
         #frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
         #print('got frankfurt')
         #london = self.getStockFromYahoo('^FTSE', start, end)
@@ -78,21 +78,22 @@ class trainingData(object):
         #nikkei = self.getStockFromYahoo('^N225', start, end)
         #print('got nikkei')
 
-        if fout == '^AXJO':
-            # if we're predicting Australian index then need 
-            # to shift other values forward to align with time zone
-            for column in nasdaq.columns:
-                nasdaq[column] = nasdaq[column].shift(1)
-            for column in sp500.columns:
-                sp500[column] = sp500[column].shift(1)
-            for column in volatility.columns:
-                volatility[column] = volatility[column].shift(1)
-        else:
-            # else shift AUS back to align with others
-            for column in australia.columns:
-                australia[column] = australia[column].shift(-1)
-            for column in hkong.columns:
-                hkong[column] = hkong[column].shift(-1)
+        # Maybe we don't need this as dates are regionalized?
+        #if fout == '^AXJO':
+        #    # if we're predicting Australian index then need 
+        #    # to shift other values forward to align with time zone
+        #    for column in nasdaq.columns:
+        #        nasdaq[column] = nasdaq[column].shift(1)
+        #    for column in sp500.columns:
+        #        sp500[column] = sp500[column].shift(1)
+        #    for column in volatility.columns:
+        #        volatility[column] = volatility[column].shift(1)
+        #else:
+        #    # else shift AUS back to align with others
+        #    for column in australia.columns:
+        #        australia[column] = australia[column].shift(-1)
+        #    for column in hkong.columns:
+        #        hkong[column] = hkong[column].shift(-1)
             
     
         #djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
@@ -112,7 +113,7 @@ class trainingData(object):
         label the categories and split into train and test
         """
 
-        dataset = self.finalTrainingData
+        dataset = self.finalTrainingData.dropna()
 
         le = preprocessing.LabelEncoder()
     
@@ -135,13 +136,13 @@ class trainingData(object):
     
         return X_train, y_train, X_test, y_test   
 
-    def returnDataForPrediction(self):
+    def returnDataForBacktesting(self):
         """
         generates categorical output column, attach to dataframe 
         label the categories and split into train and test
         """
 
-        dataset = self.finalTrainingData
+        dataset = self.finalTrainingData.dropna()
 
         le = preprocessing.LabelEncoder()
     
@@ -149,6 +150,21 @@ class trainingData(object):
         dataset.UpDown[dataset.Return_Out >= 0] = 'Up'
         dataset.UpDown[dataset.Return_Out < 0] = 'Down'
         dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
+    
+        features = dataset.columns[1:-1]
+        X = dataset[features]    
+        
+        return X  
+
+    def returnDataForPrediction(self):
+        """
+        generates categorical output column, attach to dataframe 
+        label the categories and split into train and test
+        """
+
+        dataset = self.mergedData
+
+        dataset['UpDown'] = dataset['Return_Out']
     
         features = dataset.columns[1:-1]
         X = dataset[features]    

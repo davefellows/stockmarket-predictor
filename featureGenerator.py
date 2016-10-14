@@ -65,4 +65,4 @@ def applyTimeLag(dataset, lags, delta):
             newcolumn = column + str(lag)
             dataset[newcolumn] = dataset[column].shift(lag)
 
-    return dataset.iloc[maxLag:-1,:].dropna()
+    return dataset.iloc[maxLag:-1,:]
