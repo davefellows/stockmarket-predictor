@@ -3,6 +3,7 @@ import pandas as pd
 from pandas_datareader import data
 from sklearn import preprocessing
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler  
 
 pd.options.mode.chained_assignment = None  # default='warn'
 
@@ -66,15 +67,20 @@ class trainingData(object):
         print('got volatility')
         australia = self.getStockFromYahoo('^AXJO', start, end)
         print('got australia')
+        hkong = self.getStockFromYahoo('^HSI', start, end)
+        print('got hkong')
+
+        #london = self.getStockFromYahoo('^FTSE', start, end)
+        #print('got london')
+        #gold = self.getStockFromYahoo('^XAU', start, end)
+        #print('got gold')
+        #eur = self.getStockFromYahoo('EURUSD=X', start, end)
+        #print('got euro')
 
         #frankfurt = self.getStockFromYahoo('^GDAXI', start, end)
         #print('got frankfurt')
-        #london = self.getStockFromYahoo('^FTSE', start, end)
-        #print('got london')
         #paris = self.getStockFromYahoo('^FCHI', start, end)
         #print('got paris')
-        hkong = self.getStockFromYahoo('^HSI', start, end)
-        print('got hkong')
         #nikkei = self.getStockFromYahoo('^N225', start, end)
         #print('got nikkei')
 
@@ -106,6 +112,17 @@ class trainingData(object):
     
         return out, australia, nasdaq, sp500, volatility, hkong
 
+    def normalizeData(self, train_data, test_data=None):
+        scaler = StandardScaler()  
+        # fit only on training data
+        scaler.fit(train_data)  
+        train_data = scaler.transform(train_data)  
+        if test_data is not None:
+            test_data = scaler.transform(test_data)
+            return train_data, test_data
+        
+        return train_data
+
 
     def returnDataForClassification(self, start_test, test_size=0.2):
         """
@@ -126,13 +143,11 @@ class trainingData(object):
         X = dataset[features]    
         y = dataset.UpDown
         
+        #X = StandardScaler().fit_transform(X)
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=0)    
-    
-        #X_train = X[X.index < start_test]
-        #y_train = y[y.index < start_test]              
-    
-        #X_test = X[X.index >= start_test]    
-        #y_test = y[y.index >= start_test]
+
+        # apply same transformation to training and test data
+        #X_train, X_test = self.normalizeData(X_train, X_test)
     
         return X_train, y_train, X_test, y_test   
 
@@ -152,9 +167,10 @@ class trainingData(object):
         dataset.UpDown = le.fit(dataset.UpDown).transform(dataset.UpDown)
     
         features = dataset.columns[1:-1]
-        X = dataset[features]    
+        X = dataset[features] 
+        #X = StandardScaler().fit_transform(X)
         
-        return X  
+        return X #self.normalizeData(X)
 
     def returnDataForPrediction(self):
         """
@@ -167,6 +183,6 @@ class trainingData(object):
         dataset['UpDown'] = dataset['Return_Out']
     
         features = dataset.columns[1:-1]
-        X = dataset[features]    
+        #X = dataset[features]    
         
-        return X  
+        return X #self.normalizeData(X)
