@@ -56,8 +56,6 @@ class trainingData(object):
         Collects predictors data from Yahoo Finance and Quandl.
         Returns a list of dataframes.
         """
-        #start = parser.parse(start_string)
-        #end = parser.parse(end_string)
     
         nasdaq = self.getStockFromYahoo('^IXIC', start, end)
         print('got nasdaq')
@@ -69,6 +67,10 @@ class trainingData(object):
         print('got australia')
         hkong = self.getStockFromYahoo('^HSI', start, end)
         print('got hkong')
+        #eur = self.getStockFromYahoo('EUR=X', start, end)
+        #print('got euro')
+        #gbp = self.getStockFromYahoo('GBP=X', start, end)
+        #print('got gbp')
 
         #london = self.getStockFromYahoo('^FTSE', start, end)
         #print('got london')
@@ -85,21 +87,21 @@ class trainingData(object):
         #print('got nikkei')
 
         # Maybe we don't need this as dates are regionalized?
-        #if fout == '^AXJO':
-        #    # if we're predicting Australian index then need 
-        #    # to shift other values forward to align with time zone
-        #    for column in nasdaq.columns:
-        #        nasdaq[column] = nasdaq[column].shift(1)
-        #    for column in sp500.columns:
-        #        sp500[column] = sp500[column].shift(1)
-        #    for column in volatility.columns:
-        #        volatility[column] = volatility[column].shift(1)
-        #else:
-        #    # else shift AUS back to align with others
-        #    for column in australia.columns:
-        #        australia[column] = australia[column].shift(-1)
-        #    for column in hkong.columns:
-        #        hkong[column] = hkong[column].shift(-1)
+        if fout == '^AXJO':
+            # if we're predicting Australian index then need 
+            # to shift other values forward to align with time zone
+            for column in nasdaq.columns:
+                nasdaq[column] = nasdaq[column].shift(1)
+            for column in sp500.columns:
+                sp500[column] = sp500[column].shift(1)
+            for column in volatility.columns:
+                volatility[column] = volatility[column].shift(1)
+        else:
+            # else shift AUS back to align with others
+            for column in australia.columns:
+                australia[column] = australia[column].shift(-1)
+            for column in hkong.columns:
+                hkong[column] = hkong[column].shift(-1)
             
     
         #djia = self.getStockFromQuandl("YAHOO/INDEX_DJI", 'Djia', start, end) 
