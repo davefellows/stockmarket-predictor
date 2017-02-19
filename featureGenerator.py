@@ -24,6 +24,7 @@ def applyRollMeanDelayedReturns(datasets, delta):
     """
     for dataset in datasets:
         columns = dataset.columns    
+
         adjclose = columns[-2]
         returns = columns[-1]
         for n in delta:
@@ -57,6 +58,7 @@ def applyTimeLag(dataset, lags, delta):
     # need to shift the y value back a day so we're predicting
     # next day price, rather than today!
     dataset.Return_Out = dataset.Return_Out.shift(-1)
+    
     maxLag = max(lags)
 
     columns = dataset.columns[::(2*max(delta)-1)]

@@ -137,7 +137,7 @@ def performMLPClass(X_train, y_train, X_test, y_test, parameters=None, fout=None
     if parameters is not None:
         layers = parameters
 
-    clf = MLPClassifier(solver='lbgfs', alpha=0.01, hidden_layer_sizes=layers, random_state=0)
+    clf = MLPClassifier(solver='lbfgs', alpha=0.01, hidden_layer_sizes=layers, random_state=0)
     clf.fit(X_train, y_train) 
     accuracy = clf.score(X_test, y_test)
     return accuracy, clf

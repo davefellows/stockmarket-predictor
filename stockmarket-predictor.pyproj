@@ -43,6 +43,9 @@
     <Compile Include="tests\test_trainingData.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="trader.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="trainingData.py">
       <SubType>Code</SubType>
     </Compile>

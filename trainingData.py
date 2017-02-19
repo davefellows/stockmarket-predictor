@@ -61,12 +61,15 @@ class trainingData(object):
         print('got nasdaq')
         sp500 = self.getStockFromYahoo('^GSPC', start, end)
         print('got sp500')
-        volatility = self.getStockFromYahoo('^VIX', start, end)
-        print('got volatility')
         australia = self.getStockFromYahoo('^AXJO', start, end)
         print('got australia')
+
         hkong = self.getStockFromYahoo('^HSI', start, end)
         print('got hkong')
+        volatility = self.getStockFromYahoo('^VIX', start, end)
+        print('got volatility')
+
+
         #eur = self.getStockFromYahoo('EUR=X', start, end)
         #print('got euro')
         #gbp = self.getStockFromYahoo('GBP=X', start, end)
@@ -185,6 +188,6 @@ class trainingData(object):
         dataset['UpDown'] = dataset['Return_Out']
     
         features = dataset.columns[1:-1]
-        #X = dataset[features]    
+        X = dataset[features]    
         
         return X #self.normalizeData(X)
