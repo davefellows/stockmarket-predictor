@@ -1,3 +1,4 @@
+import datetime
 import featureGenerator as fg
 import pandas as pd
 from pandas_datareader import data
@@ -6,6 +7,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler  
 
 pd.options.mode.chained_assignment = None  # default='warn'
+YAHOO_TODAY="http://download.finance.yahoo.com/d/quotes.csv?s=%s&f=sd1ohgl1vl1"
+
 
 class trainingData(object):
 
@@ -20,7 +23,7 @@ class trainingData(object):
         self.finalTrainingData = fg.applyTimeLag(self.mergedData, lags, delta)
 
 
-    def getStockFromYahoo(self, symbol, start, end):
+    def getStockFromYahoo(self, symbol, start, end, includeToday=False):
         """
         Downloads Stock from Yahoo Finance.
         Computes daily Returns based on Adj Close.
@@ -28,12 +31,22 @@ class trainingData(object):
         """
         df =  data.get_data_yahoo(symbol, start, end)
 
+        if includeToday:
+            today = datetime.date.today()
+            dft = pd.DataFrame(index=pd.DatetimeIndex(start=today, end=today, freq="D"),
+                                  columns=["Open", "High", "Low", "Close", "Volume", "Adj Close"],
+                                  dtype=float)
+
+            dft.ix[0] = pd.read_csv(YAHOO_TODAY % symbol).columns[2:]
+            dft['Adj Close'] = dft['Close']
+            dft = dft.apply(pd.to_numeric)
+            df = df.append(dft)
+
         df.columns.values[-1] = 'AdjClose'
         df.columns = df.columns + '_' + symbol
         df['Return_%s' %symbol] = df['AdjClose_%s' %symbol].pct_change()
     
         return df
-
 
     def getStockFromQuandl(self, symbol, name, start, end):
         """
@@ -61,10 +74,11 @@ class trainingData(object):
         print('got nasdaq')
         sp500 = self.getStockFromYahoo('^GSPC', start, end)
         print('got sp500')
-        australia = self.getStockFromYahoo('^AXJO', start, end)
+        australia = self.getStockFromYahoo('^AXJO', start, end, True)
         print('got australia')
+        self.aust = australia.copy()
 
-        hkong = self.getStockFromYahoo('^HSI', start, end)
+        hkong = self.getStockFromYahoo('^HSI', start, end, True)
         print('got hkong')
         volatility = self.getStockFromYahoo('^VIX', start, end)
         print('got volatility')
@@ -190,4 +204,4 @@ class trainingData(object):
         features = dataset.columns[1:-1]
         X = dataset[features]    
         
-        return X #self.normalizeData(X)
+        return X.fillna(0) #self.normalizeData(X)

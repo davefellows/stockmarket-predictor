@@ -39,7 +39,7 @@ class MarketIntradayPortfolio(Portfolio):
         portfolio['price_diff'] = self.bars['Close']-self.bars['Open']
         portfolio['price_diff'][0:5] = 0.0
         #take 10% fudge factor off for loss of efficiency on open/close pricing and brokerage fees
-        portfolio['profit'] = self.positions[self.symbol] * portfolio['price_diff'] * 0.9
+        portfolio['profit'] = self.positions[self.symbol] * portfolio['price_diff'] #* 0.9
      
         portfolio['total'] = self.initial_capital + portfolio['profit'].cumsum()
         portfolio['returns'] = portfolio['total'].pct_change()

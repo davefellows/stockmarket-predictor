@@ -15,7 +15,7 @@ def addFeatures(dataframe, adjclose, returns, n):
     dataframe[return_n] = dataframe[adjclose].pct_change(n)
     
     roll_n = returns[7:] + "RolMean" + str(n)
-    dataframe[roll_n] = pd.rolling_mean(dataframe[returns], n) #pd.Series(dataframe[returns]).rolling(window=n).mean()
+    pd.Series(dataframe[returns]).rolling(window=n).mean() # dataframe[roll_n] = pd.rolling_mean(dataframe[returns], n)
 
 
 def applyRollMeanDelayedReturns(datasets, delta):
